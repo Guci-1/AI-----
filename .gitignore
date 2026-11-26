@@ -10,14 +10,21 @@ build/
 .env
 .env.local
 .env.*.local
+*.local
 
-# 数据库
+# 环境变量模板（唯一豁免，允许入库；真实 Key 严禁提交）
+!.env.example
+
+# 数据库（SQLite 文件不入库；开箱演示：npx prisma migrate reset --force && npx prisma db seed）
 *.db
+*.db-wal
+*.db-shm
 *.db-journal
 *.sqlite
 *.sqlite3
 
 # 日志
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -34,3 +41,8 @@ Thumbs.db
 coverage/
 playwright-report/
 test-results/
+
+# ── 必须入库资产（永不 ignore）────────────────────────
+# prisma/migrations/              数据库迁移历史，必须提交
+# tests/fixtures/                 测试夹具（含 Mock 数据），必须提交
+# packages/server/.env.example    环境变量模板，必须提交（见上方豁免）
