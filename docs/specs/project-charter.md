@@ -64,6 +64,11 @@
 - **双模型配置**：`LLM_MODEL_INTENT`（轻量意图）与 `LLM_MODEL_SPEECH`（正式发言）独立配置，MVP 可填同一模型。
 - **Mock Provider**：`LLM_PROVIDER=mock` 提供确定性、零成本、零网络的输出，作为单测与 E2E 的前提。
 
+### 6.1 前端架构约束（DDD 阶段）
+- **路由**：业务实体子视图必须使用 `/d/:id/<view>` 深链模式，禁止单页状态分支。
+- **状态管理**：仅允许 useReducer + Context + TanStack Query；禁止 Zustand / Redux / MobX（除非经人工评审并更新本宪章）。
+- **组件复用**：`StudioStage` 为纯视觉容器、与数据源解耦；回放页与演播厅页复用该组件，行为逻辑由父级注入。
+
 ## 7. 非功能约束（上限保护）
 
 | 项 | 值 |
@@ -78,3 +83,4 @@
 
 ## Changelog
 - 2026-11-26 初次固化（合并此前「产品需求 / 功能 / 技术框架」多轮讨论结论）
+- 2026-11-26 新增「前端架构约束」：深链路由 / useReducer+Context+TanStack Query / StudioStage 解耦
