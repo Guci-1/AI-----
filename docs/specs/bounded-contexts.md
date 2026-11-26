@@ -9,7 +9,7 @@
 | 阵容生成 (Lineup) | Lineup, Host, Expert | 话题 + 人数 → 主持人 + 专家；Zod 校验；编辑文本；重生成 | 输出 Lineup 给讨论运行时 |
 | 讨论运行时 (Discussion Runtime) | Discussion, Turn, Speech, Status | 状态机（6 态）、发言循环、主持人控场、P4 收尾 | 调用调度器选人；触发观察员 |
 | 发言调度 (Scheduling) | Intent, Scheduler（纯代码） | 意图收集 → 硬规则 + Score 评分 → 定下一位发言者 | 消费专家意图；输出发言权 |
-| 共识提炼 (Consensus) | Consensus, Divergence, Observer | 每 5 条专家发言提炼；覆盖式输出；滑窗输入 | 读 transcript；写共识/分歧 |
+| 共识提炼 (Consensus) | Consensus, Divergence, Observer | 每 5 轮提炼；覆盖式输出结构化条目（statement+支持者+反对者）；滑窗输入 | 读 transcript；写共识/分歧 |
 | 事件溯源 (Event Sourcing) | Event | 事件落库（权威源）、SSE 推送、断线续传、回放重放 | 读库重放；SSE 订阅 |
 | LLM 接入 (LLM Provider) | Provider（openai 兼容 / mock） | 意图/发言/阵容/共识四类调用；超时/重试/限流 | 被调度器、观察员、阵容生成调用 |
 

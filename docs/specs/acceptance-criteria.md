@@ -16,14 +16,14 @@
 
 ### 观看实时讨论（专家发言）
 - [Happy Path] GIVEN 讨论处于 running WHEN 主持人开场后 THEN 专家按调度结果发言，每次 1–2 句，无机械轮流。
-- [Exception] GIVEN 连续多轮无专家想发言 WHEN 触发冷场 THEN 主持人介入追问/串联。
+- [Exception] GIVEN 本轮全体专家均无发言意图 WHEN 触发冷场 THEN 主持人介入追问/串联。
 
 ### 专家状态小窗
-- [Happy Path] GIVEN 讨论运行中 WHEN 某专家提交意图 THEN 其小窗由「待机」转「准备发言」并显示公开思考摘要；被选中后转「发言中」。
+- [Happy Path] GIVEN 讨论运行中 WHEN 某专家提交意图 THEN 其小窗由「待机」（空）转「准备发言」并显示公开思考摘要；被选中后转「发言中」（显示「组织语言中」）。
 - [Exception] GIVEN 模型产出隐藏推理 WHEN 推送到前端 THEN 该内容被丢弃，绝不在小窗展示。
 
 ### 实时共识与分歧
-- [Happy Path] GIVEN 讨论运行中 WHEN 累计 5 条专家发言 THEN 观察员提炼并覆盖式更新共识/分歧区域。
+- [Happy Path] GIVEN 讨论运行中 WHEN 累计 5 轮（专家发言） THEN 观察员提炼并覆盖式更新共识/分歧区域，每条含观点 + 支持者 + 反对者。
 
 ### 主持人总结
 - [Happy Path] GIVEN 讨论自然收敛或触达上限 WHEN 触发 P4 THEN 观察员先强制提炼一次，再由主持人以自然语言总结，页面不展示 JSON 原文。
