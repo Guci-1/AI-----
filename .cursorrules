@@ -1,0 +1,11 @@
+# 项目规则（完整版见同目录 AGENTS.md）
+
+本项目「AI Panel Studio」的 AI 协作规则。动手前先读 docs/specs/ 五件套。
+
+硬约束：
+- LLM Key 仅后端；前端零 LLM、零密钥。
+- Zod 契约只在 packages/shared；命名取自 docs/specs/ubiquitous-language.md。
+- 调度器是唯一决策者（纯代码）；主持人无派发权。
+- 只落最终态（speech.done），隐藏 CoT 丢弃，只暴露 public_thought。
+- 轮 = 仅专家发言。
+- 单测/E2E 默认 LLM_PROVIDER=mock，CI 不跑真实 LLM。
