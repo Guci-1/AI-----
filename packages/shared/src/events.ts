@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { HostSchema, ExpertSchema, ConsensusSnapshotSchema } from "./domain";
+import { HostSchema, RosterExpertSchema, ConsensusSnapshotSchema } from "./domain";
 
 // =====================================================================
 // 事件溯源：前端消费的唯一事件格式（实时 SSE 与回放 REST 共用）
@@ -30,7 +30,7 @@ export const DiscussionCreatedPayloadSchema = z.object({
 
 export const LineupReadyPayloadSchema = z.object({
   host: HostSchema,
-  experts: z.array(ExpertSchema),
+  experts: z.array(RosterExpertSchema),
 });
 
 export const HostSpeechPayloadSchema = z.object({

@@ -44,6 +44,7 @@ discussionsRouter.get("/discussions/:id", async (req, res) => {
       ? {
           host: { name: host.name, title: host.title ?? "" },
           experts: experts.map((e) => ({
+            id: e.id,
             name: e.name,
             title: e.title ?? "",
             stance: e.stance ?? "",

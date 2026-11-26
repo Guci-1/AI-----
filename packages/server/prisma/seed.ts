@@ -194,7 +194,10 @@ async function seedDiscussion(sample: Sample) {
 
   const events: { type: string; payload: unknown }[] = [];
   events.push({ type: "discussion.created", payload: { topic: sample.topic, expertCount: sample.experts.length } });
-  events.push({ type: "lineup.ready", payload: { host: sample.host, experts: sample.experts } });
+  events.push({
+    type: "lineup.ready",
+    payload: { host: sample.host, experts: sample.experts.map((e) => ({ id: expertIds.get(e.name)!, ...e })) },
+  });
   events.push({ type: "discussion.started", payload: {} });
   events.push({ type: "host.speech", payload: { kind: "opening", text: sample.opening } });
 

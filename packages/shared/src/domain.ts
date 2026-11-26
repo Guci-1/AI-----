@@ -41,6 +41,16 @@ export const LineupSchema = z.object({
 });
 export type Lineup = z.infer<typeof LineupSchema>;
 
+// ── 阵容（含 id，服务端持久化后；用于 lineup.ready 事件与详情接口）──
+export const RosterExpertSchema = ExpertSchema.extend({ id: z.string() });
+export type RosterExpert = z.infer<typeof RosterExpertSchema>;
+
+export const RosterSchema = z.object({
+  host: HostSchema,
+  experts: z.array(RosterExpertSchema).min(2).max(8),
+});
+export type Roster = z.infer<typeof RosterSchema>;
+
 // ── 共识 / 分歧（结构化、可追溯、覆盖式）────────────────────────
 export const ConsensusItemSchema = z.object({
   statement: z.string(),

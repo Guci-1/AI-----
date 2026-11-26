@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   DiscussionStatusSchema,
-  LineupSchema,
+  RosterSchema,
   ConsensusSnapshotSchema,
 } from "./domain";
 import { EventEnvelopeSchema } from "./events";
@@ -45,7 +45,7 @@ export const DiscussionDetailSchema = z.object({
   topic: z.string(),
   expertCount: z.number().int(),
   status: DiscussionStatusSchema,
-  lineup: LineupSchema.nullable(),
+  lineup: RosterSchema.nullable(),
   consensus: ConsensusSnapshotSchema.nullable(),
   summary: z.string().nullable(),
   createdAt: z.string(),
