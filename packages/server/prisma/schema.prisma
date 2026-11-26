@@ -1,0 +1,63 @@
+// AI Panel Studio — Prisma Schema
+// 说明：
+// - SQLite 不支持原生枚举，status/role/type 均用 String，
+//   允许值由 packages/shared 的 Zod schema 负责运行时校验。
+// - 讨论运行时状态（turn / gap_i / c_i / last_speaker）只存内存，不入库
+//   （重启即 interrupted，不续跑）。
+// - 事件溯源：Event 表是回放与断线续传的权威源。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 讨论：中央聚合
+model Discussion {
+  id          String   @id @default(cuid())
+  topic       String
+  expertCount Int
+  // 6 态：generating / ready / running / paused / finished / interrupted
+  status      String   @default("generating")
+  // 最新共识/分歧（结构化 JSON：{ consensus: [...], divergences: [...] }）
+  consensus   String?
+  // 主持人自然语言总结
+  summary     String?
+  createdAt   DateTime @default(now())
+  finishedAt  DateTime?
+
+  participants Participant[]
+  events       Event[]
+}
+
+// 参会者（主持人 + 专家）
+model Participant {
+  id           String     @id @default(cuid())
+  discussionId String
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  // HOST | EXPERT
+  role         String
+  name         String
+  title        String? // 职业 / Title
+  stance       String? // 立场（仅专家）
+  color        String? // 专属颜色标识
+  order        Int       @default(0)
+  systemPrompt String? // 人设 system prompt
+
+  @@index([discussionId])
+}
+
+// 事件：事件溯源权威源（回放 / 断线续传）
+model Event {
+  id           Int        @id @default(autoincrement())
+  discussionId String
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  type         String // 事件类型（见 packages/shared/src/events.ts）
+  payload      String // JSON 字符串，结构随 type 变化
+  createdAt    DateTime   @default(now())
+
+  @@index([discussionId, id])
+}
