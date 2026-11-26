@@ -87,26 +87,64 @@ discussionsRouter.post("/discussions/:id/confirm", (_req, res) => notImplemented
 // POST /api/discussions/:id/regenerate —— 重新生成阵容
 discussionsRouter.post("/discussions/:id/regenerate", (_req, res) => notImplemented(res));
 
-// PATCH /api/discussions/:id/lineup —— 编辑阵容文本字段
-discussionsRouter.patch("/discussions/:id/lineup", (_req, res) => notImplemented(res));
+// PATCH /api/discussions/:id/experts/:expertId —— 编辑专家文本字段（不增删专家）
+discussionsRouter.patch("/discussions/:id/experts/:expertId", async (req, res) => {
+  const { name, title, stance, color } = req.body ?? {};
+  const updated = await prisma.participant.updateMany({
+    where: { id: req.params.expertId, discussionId: req.params.id, role: "EXPERT" },
+    data: { name, title, stance, color },
+  });
+  if (updated.count === 0) return res.status(404).json({ error: "expert not found" });
+  res.json({ ok: true });
+});
 
 // POST /api/discussions/:id/control —— 暂停 / 继续 / 终止
 discussionsRouter.post("/discussions/:id/control", (_req, res) => notImplemented(res));
 
-// GET /api/discussions/:id/result —— 纯文本视图
+// GET /api/discussions/:id/result —— 纯文本视图（完整 transcript：专家 + 主持人，带姓名/色块）
 discussionsRouter.get("/discussions/:id/result", async (req, res) => {
-  const d = await prisma.discussion.findUnique({ where: { id: req.params.id } });
+  const d = await prisma.discussion.findUnique({
+    where: { id: req.params.id },
+    include: { participants: true },
+  });
   if (!d) return res.status(404).json({ error: "not found" });
-  const speeches = await prisma.event.findMany({
-    where: { discussionId: d.id, type: "speech.done" },
+
+  const events = await prisma.event.findMany({
+    where: { discussionId: d.id, type: { in: ["speech.done", "host.speech"] } },
     orderBy: { id: "asc" },
   });
+
+  const byId = new Map(d.participants.map((p) => [p.id, p]));
+  const host = d.participants.find((p) => p.role === "HOST");
+
+  const transcript = events.map((ev) => {
+    if (ev.type === "host.speech") {
+      const p = JSON.parse(ev.payload) as { text: string; kind: string };
+      return {
+        role: "host",
+        speakerId: "host",
+        speakerName: host?.name ?? "主持人",
+        speakerTitle: host?.title ?? "",
+        color: "#94a3b8",
+        text: p.text,
+        kind: p.kind,
+      };
+    }
+    const p = JSON.parse(ev.payload) as { expertId: string; text: string };
+    const part = byId.get(p.expertId);
+    return {
+      role: "expert",
+      speakerId: p.expertId,
+      speakerName: part?.name ?? p.expertId,
+      speakerTitle: part?.title ?? "",
+      color: part?.color ?? "#64748b",
+      text: p.text,
+    };
+  });
+
   res.json({
     topic: d.topic,
-    transcript: speeches.map((s) => {
-      const p = JSON.parse(s.payload) as { expertId: string; text: string };
-      return { expertId: p.expertId, text: p.text };
-    }),
+    transcript,
     consensus: d.consensus ? JSON.parse(d.consensus) : null,
     summary: d.summary,
   });

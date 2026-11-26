@@ -3,6 +3,7 @@ import type {
   DiscussionSummary,
   DiscussionDetail,
   ControlAction,
+  EditLineupInput,
   EventListResponse,
   ConsensusSnapshot,
 } from "@ai-panel/shared";
@@ -17,7 +18,15 @@ async function json<T>(res: Response): Promise<T> {
 // 纯文本视图响应（shared 未定义，本地声明）
 export interface ResultResponse {
   topic: string;
-  transcript: { expertId: string; text: string }[];
+  transcript: {
+    role: "host" | "expert";
+    speakerId: string;
+    speakerName: string;
+    speakerTitle: string;
+    color: string;
+    text: string;
+    kind?: string;
+  }[];
   consensus: ConsensusSnapshot | null;
   summary: string | null;
 }
@@ -41,6 +50,13 @@ export const api = {
 
   regenerate: (id: string) =>
     fetch(`${BASE}/discussions/${id}/regenerate`, { method: "POST" }).then((r) => json<DiscussionDetail>(r)),
+
+  editLineup: (id: string, expertId: string, input: EditLineupInput) =>
+    fetch(`${BASE}/discussions/${id}/experts/${expertId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    }).then((r) => json<{ ok: boolean }>(r)),
 
   control: (id: string, action: ControlAction) =>
     fetch(`${BASE}/discussions/${id}/control`, {

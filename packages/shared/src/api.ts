@@ -14,7 +14,7 @@ import { EventEnvelopeSchema } from "./events";
 //   GET    /api/discussions/:id                讨论详情
 //   POST   /api/discussions/:id/confirm        确认阵容 → running
 //   POST   /api/discussions/:id/regenerate     重新生成阵容
-//   PATCH  /api/discussions/:id/lineup         编辑阵容文本字段（不增删专家）
+//   PATCH  /api/discussions/:id/experts/:expertId  编辑专家文本字段（不增删专家）
 //   POST   /api/discussions/:id/control        控制（pause | resume | stop）
 //   GET    /api/discussions/:id/events         全量事件（回放 / 恢复）
 //   GET    /api/discussions/:id/result         纯文本视图（transcript + 共识 + 总结）
