@@ -5,5 +5,11 @@
   "description": "AI Panel Studio — AI 圆桌讨论本地 Web 应用",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "allowScripts": {
+    "@prisma/client@5.22.0": true,
+    "@prisma/engines@5.22.0": true,
+    "prisma@5.22.0": true,
+    "esbuild@0.28.2": true
+  }
 }
